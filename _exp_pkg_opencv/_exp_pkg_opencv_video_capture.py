@@ -8,31 +8,31 @@ def showCapture():
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         cv2.imshow('', gray)
         if cv2.waitKey(1) & 0xff == ord('q'):
-            break;
+            break
         
     cap.release()
-    cv2.destroyAllWindows();
+    cv2.destroyAllWindows()
     
 def saveCapture():
     print('->save video + + + + +')
     cap = cv2.VideoCapture(0)
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    out = cv2.VideoWriter('output.avi', fourcc, 20.0, (640, 480))
-    while (cap.isOpened()):
+    fourcc = cv2.VideoWriter_fourcc(*'MP4V')
+    width, height = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    print("->width: %s, height: %s" % (width, height))
+    out = cv2.VideoWriter('output.mp4', fourcc, 30, (width, height))
+    while (cap.isOpened()):        
         ret, frame = cap.read()
-        if ret == True:
-            frame = cv2.flip(frame, 0)
-            # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            out.write(frame)
-            cv2.imshow('frame', frame)
-            if cv2.waitKey(1) & 0xff == ord('q'):
-                break;
-        else:
-            break;
+        if not ret:
+            break
+        
+        out.write(frame)
+        cv2.imshow('video', frame)
+        if cv2.waitKey(1000//30) & 0xff == ord('q'):
+            break
         
     cap.release()
     out.release()
-    cv2.destroyAllWindows();
+    cv2.destroyAllWindows()
     
 if __name__ == '__main__':
     # showCapture()
