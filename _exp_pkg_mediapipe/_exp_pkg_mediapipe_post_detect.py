@@ -125,7 +125,7 @@ def capture_video():
             
             end_time = time.time()
             diff = int(end_time) - int(start_time)
-            if diff >= 3:
+            if diff >= 1:
                 print("->start_time: %s, end_time: %s, time diff: %s" % (start_time, end_time, diff))
                 start_time = end_time
                 
@@ -143,24 +143,24 @@ def capture_video():
                     z = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].z * width
                     v = results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].visibility
                     
-                    # 打印分量坐标
-                    print(f'->real-3D formatted data: {mp_pose.PoseLandmark(i).name}:')
-                    print(f'x: {x}')
-                    print(f'y: {y}')
-                    print(f'z: {z}')
-                    print(f'visibility: {v}\n')
+                    # # 打印分量坐标
+                    # print(f'->real-3D formatted data: {mp_pose.PoseLandmark(i).name}:')
+                    # print(f'x: {x}')
+                    # print(f'y: {y}')
+                    # print(f'z: {z}')
+                    # print(f'visibility: {v}\n')
                     
-                #     # 拼接列标题和数据
-                #     header += "{}#".format(mp_pose.PoseLandmark(i).name)
-                #     data += "({},{},{})#".format(x,y,z)
+                    # 拼接列标题和数据
+                    header += "{}#".format(mp_pose.PoseLandmark(i).name)
+                    data += "{},{},{}#".format(x,y,z)
                 
-                # # 去掉行尾的#号
-                # header = header[:len(header)-1]
-                # data = data[:len(data)-1]
+                # 去掉行尾的#号
+                header = header[:len(header)-1]
+                data = data[:len(data)-1]
                 
-                # # 写文件
-                # file.write_header(header)
-                # file.write_data(data)
+                # 写文件
+                file.write_header(header)
+                file.write_data(data)
 
             # Draw the pose annotation on the image.
             image.flags.writeable = True
