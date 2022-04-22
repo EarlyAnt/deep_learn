@@ -33,10 +33,10 @@ def select_folder():
                 file_list = sorted(os.listdir(selected_folder))
                 image_files = []
                 for file in file_list:
-                    if (file.startswith(".")):
+                    file_name = "{}/{}".format(selected_folder, file)
+                    if file.startswith(".") or not os.path.isfile(file_name):
                         continue
                     
-                    file_name = "{}/{}".format(selected_folder, file)
                     image_files.append(file_name)
                 
                 static_image(image_files, selected_folder)
@@ -54,45 +54,44 @@ def static_image(image_files, output_folder):
         os.mkdir(output_folder)
 
     BG_COLOR = (192, 192, 192) # gray
-    with mp_pose.Pose(
-        static_image_mode=False,
-        model_complexity=2,
-        enable_segmentation=True,
-        min_detection_confidence=0.5) as pose:
-        for idx, file in enumerate(image_files):
-            file_name = os.path.basename(file)
-            image = cv2.imread(file)
-            image_height, image_width, _ = image.shape
-            # Convert the BGR image to RGB before processing.
-            results = pose.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+    pose = mp_pose.Pose(static_image_mode=True, min_detection_confidence=0.3, model_complexity=2)
+    for idx, file in enumerate(image_files):
+        file_name = os.path.basename(file)
+        image = cv2.imread(file)
+        image_height, image_width, _ = image.shape
+        # Convert the BGR image to RGB before processing.
+        results = pose.process(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
-            if not results.pose_landmarks:
-                continue
-            
-            print(
-                f'Nose coordinates: ('
-                f'{results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].x * image_width}, '
-                f'{results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].y * image_height})'
-            )
+        if not results.pose_landmarks:
+            continue
+        
+        print(
+            f'Nose coordinates: ('
+            f'{results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].x * image_width}, '
+            f'{results.pose_landmarks.landmark[mp_pose.PoseLandmark.NOSE].y * image_height})'
+        )
 
-            annotated_image = image.copy()
-            # Draw segmentation on the image.
-            # To improve segmentation around boundaries, consider applying a joint
-            # bilateral filter to "results.segmentation_mask" with "image".
-            condition = np.stack((results.segmentation_mask,) * 3, axis=-1) > 0.1
-            bg_image = np.zeros(image.shape, dtype=np.uint8)
-            bg_image[:] = BG_COLOR
-            annotated_image = np.where(condition, annotated_image, bg_image)
-            # Draw pose landmarks on the image.
-            mp_drawing.draw_landmarks(
-                annotated_image,
-                results.pose_landmarks,
-                mp_pose.POSE_CONNECTIONS,
-                landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
-            cv2.imwrite("{}/{}".format(output_folder, file_name), annotated_image)
-            # Plot pose world landmarks.
-            mp_drawing.plot_landmarks(
-                results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS)
+        annotated_image = image.copy()
+        # Draw segmentation on the image.
+        # To improve segmentation around boundaries, consider applying a joint
+        # bilateral filter to "results.segmentation_mask" with "image".
+        if not results.segmentation_mask:
+            continue
+        
+        condition = np.stack((results.segmentation_mask,) * 3, axis=-1) > 0.1
+        bg_image = np.zeros(image.shape, dtype=np.uint8)
+        bg_image[:] = BG_COLOR
+        annotated_image = np.where(condition, annotated_image, bg_image)
+        # Draw pose landmarks on the image.
+        mp_drawing.draw_landmarks(
+            annotated_image,
+            results.pose_landmarks,
+            mp_pose.POSE_CONNECTIONS,
+            landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
+        cv2.imwrite("{}/{}".format(output_folder, file_name), annotated_image)
+        # Plot pose world landmarks.
+        mp_drawing.plot_landmarks(
+            results.pose_world_landmarks, mp_pose.POSE_CONNECTIONS)
 
 def capture_video():
     # For webcam input:
@@ -112,7 +111,17 @@ def capture_video():
             # pass by reference.
             image.flags.writeable = False
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            width, height, _ = image.shape
             results = pose.process(image)
+            
+            for i in range(33):
+                # print(f'->inner data: {mp_pose.PoseLandmark(i).name}:\n{results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value]}')
+                # print(f'->real-3D origin data: {mp_pose.PoseLandmark(i).name}:\n{results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value]}')
+                print(f'->real-3D formatted data: {mp_pose.PoseLandmark(i).name}:')
+                print(f'x: {results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].x * width}')
+                print(f'y: {results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].y * height}')
+                print(f'z: {results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].z * width}')
+                print(f'visibility: {results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].visibility}\n')
 
             # Draw the pose annotation on the image.
             image.flags.writeable = True
@@ -120,6 +129,7 @@ def capture_video():
             mp_drawing.draw_landmarks(
                 image,
                 results.pose_landmarks,
+                # results.pose_world_landmarks,
                 mp_pose.POSE_CONNECTIONS,
                 landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
             # Flip the image horizontally for a selfie-view display.
