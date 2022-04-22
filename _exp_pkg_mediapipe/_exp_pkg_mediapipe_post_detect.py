@@ -1,8 +1,11 @@
 import os
+import time
 import cv2
 import numpy as np
 import mediapipe as mp
 import PySimpleGUI as sg
+
+from csv_file_util import ScvFileUtil
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -95,6 +98,12 @@ def static_image(image_files, output_folder):
 
 def capture_video():
     # For webcam input:
+    file = ScvFileUtil()
+    file.open_write("{}/data.txt".format(os.path.dirname(__file__)))
+    header = ""
+    data = ""
+    start_time = time.time()
+    
     cap = cv2.VideoCapture(0)
     with mp_pose.Pose(
         min_detection_confidence=0.5,
@@ -114,14 +123,44 @@ def capture_video():
             width, height, _ = image.shape
             results = pose.process(image)
             
-            for i in range(33):
-                # print(f'->inner data: {mp_pose.PoseLandmark(i).name}:\n{results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value]}')
-                # print(f'->real-3D origin data: {mp_pose.PoseLandmark(i).name}:\n{results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value]}')
-                print(f'->real-3D formatted data: {mp_pose.PoseLandmark(i).name}:')
-                print(f'x: {results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].x * width}')
-                print(f'y: {results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].y * height}')
-                print(f'z: {results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].z * width}')
-                print(f'visibility: {results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].visibility}\n')
+            end_time = time.time()
+            diff = int(end_time) - int(start_time)
+            if diff >= 3:
+                print("->start_time: %s, end_time: %s, time diff: %s" % (start_time, end_time, diff))
+                start_time = end_time
+                
+                header = ""
+                data = ""
+                for i in range(33):
+                    # # 打印模拟坐标
+                    # print(f'->inner data: {mp_pose.PoseLandmark(i).name}:\n{results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value]}')
+                    # # 打印真实坐标(相对真实)
+                    # print(f'->real-3D origin data: {mp_pose.PoseLandmark(i).name}:\n{results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value]}')
+                    
+                    # 计算分量坐标
+                    x = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].x * width
+                    y = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].y * height
+                    z = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].z * width
+                    v = results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].visibility
+                    
+                    # 打印分量坐标
+                    print(f'->real-3D formatted data: {mp_pose.PoseLandmark(i).name}:')
+                    print(f'x: {x}')
+                    print(f'y: {y}')
+                    print(f'z: {z}')
+                    print(f'visibility: {v}\n')
+                    
+                #     # 拼接列标题和数据
+                #     header += "{}#".format(mp_pose.PoseLandmark(i).name)
+                #     data += "({},{},{})#".format(x,y,z)
+                
+                # # 去掉行尾的#号
+                # header = header[:len(header)-1]
+                # data = data[:len(data)-1]
+                
+                # # 写文件
+                # file.write_header(header)
+                # file.write_data(data)
 
             # Draw the pose annotation on the image.
             image.flags.writeable = True
@@ -132,6 +171,7 @@ def capture_video():
                 # results.pose_world_landmarks,
                 mp_pose.POSE_CONNECTIONS,
                 landmark_drawing_spec=mp_drawing_styles.get_default_pose_landmarks_style())
+            
             # Flip the image horizontally for a selfie-view display.
             cv2.imshow('MediaPipe Pose', cv2.flip(image, 1))
             key = cv2.waitKey(5)
