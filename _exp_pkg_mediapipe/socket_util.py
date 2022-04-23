@@ -18,7 +18,7 @@ class SocketClient:
             self._client.connect(server_ip_port)
             self._connected = True
             print("->client connected to server")
-            self.send("i am client")
+            # self.send("i am client")
             
             while True:
                 received_data=self._client.recv(1024)#接受服务端的信息，最大数据为1k
@@ -33,7 +33,7 @@ class SocketClient:
             if self._client:
                 bytes = str(message).encode("utf-8")
                 self._client.send(bytes)#将发送的数据进行编码
-                print("->client send data: %s" % message)
+                # print("->client send data: %s" % message)
         except Exception as ex:
             print("->send message error: %s" % ex)
             
@@ -91,7 +91,7 @@ def connect_remote(ip_port=(default_ip,default_port)):
     run_client(ip_port=ip_port);
 
 if __name__ == "__main__":
-    connect_local()
-    # connect_remote(ip_port=("192.168.0.5", 8080))
+    # connect_local()
+    connect_remote(ip_port=("192.168.0.105", 2000))
 
 
