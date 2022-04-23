@@ -6,6 +6,7 @@ import mediapipe as mp
 import PySimpleGUI as sg
 
 from csv_file_util import ScvFileUtil
+from socket_util import SocketClient
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -99,9 +100,12 @@ def static_image(image_files, output_folder):
 def capture_video():
     # For webcam input:
     file = ScvFileUtil()
-    file.open_write("{}/data.txt".format(os.path.dirname(__file__)))
-    header = ""
-    data = ""
+    client = SocketClient()
+    client.connect(server_ip_port=("192.168.0.105", 2000), keep_listen=False)
+    # file.open_write("{}/data.txt".format(os.path.dirname(__file__)))
+    # header = ""
+    # data = ""
+    combined_data = ""
     start_time = time.time()
     
     cap = cv2.VideoCapture(0)
@@ -125,12 +129,13 @@ def capture_video():
             
             end_time = time.time()
             diff = int(end_time) - int(start_time)
-            if diff >= 1:
+            if diff >= 20:
                 print("->start_time: %s, end_time: %s, time diff: %s" % (start_time, end_time, diff))
                 start_time = end_time
                 
-                header = ""
-                data = ""
+                # header = ""
+                # data = ""
+                combined_data = ""
                 for i in range(33):
                     # # 打印模拟坐标
                     # print(f'->inner data: {mp_pose.PoseLandmark(i).name}:\n{results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value]}')
@@ -138,6 +143,9 @@ def capture_video():
                     # print(f'->real-3D origin data: {mp_pose.PoseLandmark(i).name}:\n{results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value]}')
                     
                     # 计算分量坐标
+                    if not results.pose_world_landmarks or not results.pose_world_landmarks.landmark:
+                        continue
+                    
                     x = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].x * width
                     y = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].y * height
                     z = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].z * width
@@ -151,16 +159,22 @@ def capture_video():
                     # print(f'visibility: {v}\n')
                     
                     # 拼接列标题和数据
-                    header += "{}#".format(mp_pose.PoseLandmark(i).name)
-                    data += "{},{},{}#".format(x,y,z)
+                    # header += "{}#".format(mp_pose.PoseLandmark(i).name)
+                    # data += "{},{},{}#".format(x,y,z)
+                    combined_data += "{},{},{},{}".format(mp_pose.PoseLandmark(i).name,x,y,z)
                 
-                # 去掉行尾的#号
-                header = header[:len(header)-1]
-                data = data[:len(data)-1]
+                    # 去掉行尾的#号
+                    # header = header[:len(header)-1]
+                    # data = data[:len(data)-1]
+                    combined_data = combined_data[:len(combined_data)-1]
+                    
+                # # 写文件
+                # file.write_header(header)
+                # file.write_data(data)
                 
-                # 写文件
-                file.write_header(header)
-                file.write_data(data)
+                # 通过socket发送数据
+                client.send(combined_data)
+                print("->send data: {}".format(combined_data))
 
             # Draw the pose annotation on the image.
             image.flags.writeable = True
@@ -178,6 +192,7 @@ def capture_video():
             if key == ord('q'):
                 break
         cap.release()
+        client.close
 
 if __name__ == "__main__":
     # select_folder()

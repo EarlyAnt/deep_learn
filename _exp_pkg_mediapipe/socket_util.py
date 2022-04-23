@@ -11,20 +11,26 @@ class SocketClient:
     _client=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     _connected = False
     
-    def connect(self, server_ip_port=(default_ip,default_port)):
+    def connect(self, server_ip_port=(default_ip,default_port), keep_listen=True, say_hello=False):
         #进行连接服务器
         try:
             print("->client try to connect: {}".format(server_ip_port))
             self._client.connect(server_ip_port)
             self._connected = True
             print("->client connected to server")
-            # self.send("i am client")
             
-            while True:
-                received_data=self._client.recv(1024)#接受服务端的信息，最大数据为1k
-                print("->client receive data: %s" % received_data.decode('utf-8'))
-                message=input("client wanna say:")
-                self.send(message)
+            received_data=self._client.recv(1024)#接受服务端的信息，最大数据为1k
+            print("->client receive data: %s" % received_data.decode('utf-8'))
+            
+            if say_hello:
+                self.send("i am client")
+                
+            if keep_listen:
+                while True:
+                    received_data=self._client.recv(1024)#接受服务端的信息，最大数据为1k
+                    print("->client receive data: %s" % received_data.decode('utf-8'))
+                    message=input("client wanna say:")
+                    self.send(message)
         except Exception as ex:
             print("->connect to server error: %s" % ex)
 
@@ -78,7 +84,7 @@ def run_server(ip_port=(default_ip,default_port)):
     
 def run_client(ip_port=(default_ip,default_port)):
     client = SocketClient();
-    client.connect(server_ip_port=ip_port)
+    client.connect(server_ip_port=ip_port, say_hello=True)
     
 def connect_local(ip_port=(default_ip,default_port)):
     t1 = threading.Thread(target=run_server, args=(ip_port,))     # target是要执行的函数名（不是函数），args是函数对应的参数，以元组的形式存在
