@@ -129,7 +129,7 @@ def capture_video():
             
             end_time = time.time()
             diff = int(end_time) - int(start_time)
-            if diff >= 20:
+            if diff >= 1:
                 print("->start_time: %s, end_time: %s, time diff: %s" % (start_time, end_time, diff))
                 start_time = end_time
                 
@@ -161,12 +161,12 @@ def capture_video():
                     # 拼接列标题和数据
                     # header += "{}#".format(mp_pose.PoseLandmark(i).name)
                     # data += "{},{},{}#".format(x,y,z)
-                    combined_data += "{},{},{},{}".format(mp_pose.PoseLandmark(i).name,x,y,z)
+                    combined_data += "{},{},{},{}#".format(mp_pose.PoseLandmark(i).name,x,y,z)
                 
-                    # 去掉行尾的#号
-                    # header = header[:len(header)-1]
-                    # data = data[:len(data)-1]
-                    combined_data = combined_data[:len(combined_data)-1]
+                # 去掉行尾的#号
+                # header = header[:len(header)-1]
+                # data = data[:len(data)-1]
+                combined_data = combined_data[:len(combined_data)-1]
                     
                 # # 写文件
                 # file.write_header(header)
