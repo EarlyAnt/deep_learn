@@ -99,6 +99,8 @@ def static_image(image_files, output_folder):
 
 def capture_video():
     # For webcam input:
+    valid_bones = ('NOSE', 'LEFT_SHOULDER', 'RIGHT_SHOULDER', 'LEFT_ELBOW', 'RIGHT_ELBOW', 'LEFT_WRIST', 'RIGHT_WRIST', 'LEFT_HIP', 'RIGHT_HIP')
+    
     file = ScvFileUtil()
     client = SocketClient()
     client.connect(server_ip_port=("192.168.0.105", 2000), keep_listen=False)
@@ -142,26 +144,28 @@ def capture_video():
                     # # 打印真实坐标(相对真实)
                     # print(f'->real-3D origin data: {mp_pose.PoseLandmark(i).name}:\n{results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value]}')
                     
+                    bone_name = mp_pose.PoseLandmark(i).name
+                    
                     # 计算分量坐标
-                    if not results.pose_world_landmarks or not results.pose_world_landmarks.landmark:
+                    if not results.pose_world_landmarks or not results.pose_world_landmarks.landmark or not valid_bones.__contains__(bone_name):
                         continue
                     
                     x = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].x * width
                     y = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].y * height
                     z = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].z * width
-                    v = results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].visibility
+                    v = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].visibility
                     
                     # # 打印分量坐标
-                    # print(f'->real-3D formatted data: {mp_pose.PoseLandmark(i).name}:')
+                    # print(f'->real-3D formatted data: {bone_name}:')
                     # print(f'x: {x}')
                     # print(f'y: {y}')
                     # print(f'z: {z}')
                     # print(f'visibility: {v}\n')
                     
                     # 拼接列标题和数据
-                    # header += "{}#".format(mp_pose.PoseLandmark(i).name)
+                    # header += "{}#".format(bone_name)
                     # data += "{},{},{}#".format(x,y,z)
-                    combined_data += "{},{},{},{}#".format(mp_pose.PoseLandmark(i).name,x,y,z)
+                    combined_data += "{},{},{},{}#".format(bone_name,x,y,z)
                 
                 # 去掉行尾的#号
                 # header = header[:len(header)-1]

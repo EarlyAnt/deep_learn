@@ -38,7 +38,7 @@ class SocketClient:
         try:
             if self._client:
                 bytes = str(message).encode("utf-8")
-                self._client.send(bytes)#将发送的数据进行编码
+                self._client.sendall(bytes)#将发送的数据进行编码
                 # print("->client send data: %s" % message)
         except Exception as ex:
             print("->send message error: %s" % ex)
