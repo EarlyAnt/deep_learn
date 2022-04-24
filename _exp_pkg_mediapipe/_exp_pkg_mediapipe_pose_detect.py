@@ -130,8 +130,8 @@ def capture_video():
             results = pose.process(image)
             
             end_time = time.time()
-            diff = int(end_time) - int(start_time)
-            if diff >= 1:
+            diff = end_time - start_time
+            if diff >= 0.05:
                 print("->start_time: %s, end_time: %s, time diff: %s" % (start_time, end_time, diff))
                 start_time = end_time
                 
