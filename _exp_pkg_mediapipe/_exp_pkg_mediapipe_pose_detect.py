@@ -100,10 +100,11 @@ def static_image(image_files, output_folder):
 def capture_video():
     # For webcam input:
     valid_bones = ('NOSE', 'LEFT_SHOULDER', 'RIGHT_SHOULDER', 'LEFT_ELBOW', 'RIGHT_ELBOW', 'LEFT_WRIST', 'RIGHT_WRIST', 'LEFT_HIP', 'RIGHT_HIP')
+    # valid_bones = ('LEFT_WRIST', 'RIGHT_WRIST')
     
     file = ScvFileUtil()
     client = SocketClient()
-    client.connect(server_ip_port=("192.168.0.105", 2000), keep_listen=False)
+    client.connect(server_ip_port=("192.168.0.103", 2000), keep_listen=False)
     # file.open_write("{}/data.txt".format(os.path.dirname(__file__)))
     # header = ""
     # data = ""
@@ -150,6 +151,13 @@ def capture_video():
                     if not results.pose_world_landmarks or not results.pose_world_landmarks.landmark or not valid_bones.__contains__(bone_name):
                         continue
                     
+                    # # 本地坐标
+                    # x = results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].x
+                    # y = results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].y
+                    # z = results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].z
+                    # v = results.pose_landmarks.landmark[mp_pose.PoseLandmark(i).value].visibility
+                    
+                    # 世界坐标带缩放
                     x = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].x * width
                     y = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].y * height
                     z = results.pose_world_landmarks.landmark[mp_pose.PoseLandmark(i).value].z * width
