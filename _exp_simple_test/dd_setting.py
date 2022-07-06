@@ -1,8 +1,5 @@
 import random
 from collections import namedtuple
-from matplotlib.pyplot import text
-
-from sqlalchemy import null
 
 SettingParam = namedtuple(
     "SettingParam", "display_rate, n_batches, batch_size, steps, skip_steps, cut_overview, cut_innercut, cut_ic_pow, cut_icgray_p")
@@ -22,7 +19,7 @@ artists = {'0101': 'Chinese ink painting',
            '0404': 'Thomas Kinkade',
            '0501': 'Pascal Campion'}
 
-styles = {0: null,
+styles = {0: None,
           1: StyleConfig(artists=['0101'], prefix='A beautiful Chinese ink'),
           2: StyleConfig(artists=['0201', '0202', '0203'], prefix='A beautiful VR 3D painting by '),
           3: StyleConfig(artists=['0301', '0302', '0303'], prefix='A picture by '),
@@ -51,7 +48,7 @@ def get_rules():
 def get_setting(style_code):
     print("get_setting->style_code: {}".format(style_code))
     style = styles[style_code]
-    if style is not null and len(style.artists) > 0:
+    if style is not None and len(style.artists) > 0:
         print("get_setting->style: {}".format(style))
         artists_list = style.artists
         print("get_setting->artists_list: {}".format(artists_list))
@@ -66,7 +63,7 @@ def get_setting(style_code):
         return setting_param
     else:
         print("get_setting->none artist")
-        return null
+        return None
 
 
 def make_image(text_prompt, style):
@@ -76,7 +73,7 @@ def make_image(text_prompt, style):
     print("make_image->style: {}".format(style))
     style = styles[style]
     artist = ''
-    if style is not null and len(style.artists) > 0:
+    if style is not None and len(style.artists) > 0:
         artists_list = style.artists
         print("make_image->artists_list: {}".format(artists_list))
         index = random.randint(0, len(artists_list) - 1)
