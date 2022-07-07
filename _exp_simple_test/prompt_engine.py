@@ -2,9 +2,16 @@ import random
 from collections import namedtuple
 
 SettingParam = namedtuple(
-    "SettingParam", "display_rate, n_batches, batch_size, steps, skip_steps, cut_overview, cut_innercut, cut_ic_pow, cut_icgray_p")
+    "SettingParam", "steps, skip_steps, clip_guidance_scale, cutn_batches")
 
 StyleConfig = namedtuple("StyleConfig", "artists, prefix")
+
+# 5种风格
+# 01-中国风
+# 02-3D渲染
+# 03-超现实主义
+# 04-cg幻想
+# 05-现代插画
 
 
 class PromptEngine:
@@ -30,13 +37,29 @@ class PromptEngine:
 
     _rule_list = {}
     _rule_list["0101"] = SettingParam(
-        display_rate=1, n_batches=1, batch_size=1, steps=1, skip_steps=1, cut_overview=1, cut_innercut=1, cut_ic_pow=1, cut_icgray_p=1)
+        steps=200, skip_steps=20, clip_guidance_scale=13000, cutn_batches=2)
     _rule_list["0201"] = SettingParam(
-        display_rate=2, n_batches=2, batch_size=2, steps=2, skip_steps=2, cut_overview=2, cut_innercut=2, cut_ic_pow=2, cut_icgray_p=2)
+        steps=250, skip_steps=20, clip_guidance_scale=10000, cutn_batches=4)
     _rule_list["0202"] = SettingParam(
-        display_rate=3, n_batches=3, batch_size=3, steps=3, skip_steps=3, cut_overview=3, cut_innercut=3, cut_ic_pow=3, cut_icgray_p=3)
+        steps=250, skip_steps=20, clip_guidance_scale=10000, cutn_batches=4)
     _rule_list["0203"] = SettingParam(
-        display_rate=4, n_batches=4, batch_size=4, steps=4, skip_steps=4, cut_overview=4, cut_innercut=4, cut_ic_pow=4, cut_icgray_p=4)
+        steps=250, skip_steps=20, clip_guidance_scale=10000, cutn_batches=4)
+    _rule_list["0301"] = SettingParam(
+        steps=200, skip_steps=20, clip_guidance_scale=13000, cutn_batches=2)
+    _rule_list["0302"] = SettingParam(
+        steps=200, skip_steps=20, clip_guidance_scale=13000, cutn_batches=2)
+    _rule_list["0303"] = SettingParam(
+        steps=200, skip_steps=20, clip_guidance_scale=13000, cutn_batches=2)
+    _rule_list["0401"] = SettingParam(
+        steps=150, skip_steps=10, clip_guidance_scale=10000, cutn_batches=4)
+    _rule_list["0402"] = SettingParam(
+        steps=150, skip_steps=10, clip_guidance_scale=10000, cutn_batches=4)
+    _rule_list["0403"] = SettingParam(
+        steps=150, skip_steps=10, clip_guidance_scale=10000, cutn_batches=4)
+    _rule_list["0404"] = SettingParam(
+        steps=150, skip_steps=10, clip_guidance_scale=10000, cutn_batches=4)
+    _rule_list["0501"] = SettingParam(
+        steps=200, skip_steps=20, clip_guidance_scale=13000, cutn_batches=2)
 
     def _get_suffix(self):
         return 'Trending on artstation.'
@@ -83,8 +106,8 @@ if __name__ == "__main__":
     prompt_engine = PromptEngine()
 
     sentence = prompt_engine.make_sentense(
-        text_prompt="a group of small animals are feeding, playing and resting on the grass", style=2)
+        text_prompt="a group of small animals are feeding, playing and resting on the grass", style=3)
     print("main->sentence: {}".format(sentence))
 
-    rule = prompt_engine.get_rule(style=2)
+    rule = prompt_engine.get_rule(style=4)
     print("main->rule.step: {}".format(rule.steps))
