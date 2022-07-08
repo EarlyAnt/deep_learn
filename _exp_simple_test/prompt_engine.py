@@ -15,7 +15,7 @@ StyleConfig = namedtuple("StyleConfig", "artists, prefix")
 
 
 class PromptEngine:
-    _artist_list = {'0101': 'Chinese ink painting',
+    _artist_list = {'0101': '',
                     '0201': 'Aka mike winkelman',
                     '0202': 'high-definition',
                     '0203': 'Unreal Engine',
@@ -26,14 +26,22 @@ class PromptEngine:
                     '0402': 'Ross Tran',
                     '0403': 'Liam WongJohn Harris',
                     '0404': 'Thomas Kinkade',
+                    '0405': 'John Harris',
                     '0501': 'Pascal Campion'}
+
+    # _style_list = {0: None,
+    #                1: StyleConfig(artists=['0101'], prefix='A beautiful Chinese ink'),
+    #                2: StyleConfig(artists=['0201', '0202', '0203'], prefix='A beautiful VR 3D painting by '),
+    #                3: StyleConfig(artists=['0301', '0302', '0303'], prefix='A picture by '),
+    #                4: StyleConfig(artists=['0401', '0402', '0403', '0404'], prefix='A image by '),
+    #                5: StyleConfig(artists=['0501'], prefix='A modern picture by ')}
 
     _style_list = {0: None,
                    1: StyleConfig(artists=['0101'], prefix='A beautiful Chinese ink'),
-                   2: StyleConfig(artists=['0201', '0202', '0203'], prefix='A beautiful VR 3D painting by '),
-                   3: StyleConfig(artists=['0301', '0302', '0303'], prefix='A picture by '),
-                   4: StyleConfig(artists=['0401', '0402', '0403', '0404'], prefix='A image by '),
-                   5: StyleConfig(artists=['0401', '0402', '0403', '0404'], prefix='A modern picture by ')}
+                   2: StyleConfig(artists=['0201'], prefix='A beautiful VR 3D painting by '),
+                   3: StyleConfig(artists=['0301'], prefix='A picture by '),
+                   4: StyleConfig(artists=['0405'], prefix='A image by '),
+                   5: StyleConfig(artists=['0501'], prefix='A modern picture by ')}
 
     _rule_list = {}
     _rule_list["0101"] = SettingParam(
@@ -57,6 +65,8 @@ class PromptEngine:
     _rule_list["0403"] = SettingParam(
         steps=150, skip_steps=10, clip_guidance_scale=10000, cutn_batches=4)
     _rule_list["0404"] = SettingParam(
+        steps=150, skip_steps=10, clip_guidance_scale=10000, cutn_batches=4)
+    _rule_list["0405"] = SettingParam(
         steps=150, skip_steps=10, clip_guidance_scale=10000, cutn_batches=4)
     _rule_list["0501"] = SettingParam(
         steps=200, skip_steps=20, clip_guidance_scale=13000, cutn_batches=2)
@@ -104,7 +114,7 @@ class PromptEngine:
 
 
 if __name__ == "__main__":
-    test_style = 0
+    test_style = 1
 
     prompt_engine = PromptEngine()
 
