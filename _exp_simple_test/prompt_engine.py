@@ -37,7 +37,7 @@ class PromptEngine:
 
     _rule_list = {}
     _rule_list["0101"] = SettingParam(
-        steps=200, skip_steps=20, clip_guidance_scale=13000, cutn_batches=2)
+        steps=250, skip_steps=25, clip_guidance_scale=8000, cutn_batches=4)
     _rule_list["0201"] = SettingParam(
         steps=250, skip_steps=20, clip_guidance_scale=10000, cutn_batches=4)
     _rule_list["0202"] = SettingParam(
