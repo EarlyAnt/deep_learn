@@ -95,21 +95,24 @@ class PromptEngine:
             print("make_sentense->artist_code: {}".format(artist_code))
             artist = self._artist_list[artist_code]
             print("make_sentense->artist: {}".format(artist))
-
-        sentence = "{}{}, {}. {}".format(
-            style.prefix, artist, text_prompt, self._get_suffix())
+            sentence = "{}{}, {}. {}".format(
+                style.prefix, artist, text_prompt, self._get_suffix())
+        else:
+            sentence = text_prompt
         print("make_sentense->full prompt: {}".format(sentence))
         return sentence
 
 
 if __name__ == "__main__":
+    test_style = 0
+
     prompt_engine = PromptEngine()
 
     sentence = prompt_engine.make_sentense(
-        text_prompt="a group of small animals are feeding, playing and resting on the grass", style=3)
+        text_prompt="a group of small animals are feeding, playing and resting on the grass", style=test_style)
     print("main->sentence: {}".format(sentence))
 
-    rule = prompt_engine.get_rule(style=0)
+    rule = prompt_engine.get_rule(style=test_style)
     if rule is None:
         print("main->rule: {}".format(rule))
     else:
