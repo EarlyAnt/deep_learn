@@ -66,9 +66,9 @@ class PromptEngine:
 
     def get_rule(self, style):
         print("get_rule->style: {}".format(style))
-        style = self._style_list[style]
-        if style is not None and len(style.artists) > 0:
-            artists_list = style.artists
+        selected_style = self._style_list[style]
+        if selected_style is not None and len(selected_style.artists) > 0:
+            artists_list = selected_style.artists
             print("get_rule->artists_list: {}".format(artists_list))
             index = random.randint(0, len(artists_list) - 1)
             print("get_rule->index: {}".format(index))
@@ -109,5 +109,8 @@ if __name__ == "__main__":
         text_prompt="a group of small animals are feeding, playing and resting on the grass", style=3)
     print("main->sentence: {}".format(sentence))
 
-    rule = prompt_engine.get_rule(style=4)
-    print("main->rule.step: {}".format(rule.steps))
+    rule = prompt_engine.get_rule(style=0)
+    if rule is None:
+        print("main->rule: {}".format(rule))
+    else:
+        print("main->rule.step: {}".format(rule.steps))
