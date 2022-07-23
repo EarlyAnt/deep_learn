@@ -2,7 +2,7 @@ import random
 from collections import namedtuple
 
 SettingParam = namedtuple(
-    "SettingParam", "steps, skip_steps, clip_guidance_scale, cutn_batches")
+    "SettingParam", "steps, skip_steps, clip_guidance_scale, cutn_batches, cut_ic_pow, eta, clamp_max")
 
 StyleConfig = namedtuple("StyleConfig", "artists, prefix")
 
@@ -45,31 +45,31 @@ class PromptEngine:
 
     _rule_list = {}
     _rule_list["0101"] = SettingParam(
-        steps=250, skip_steps=25, clip_guidance_scale=8000, cutn_batches=4)
+        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0201"] = SettingParam(
-        steps=250, skip_steps=20, clip_guidance_scale=10000, cutn_batches=4)
+        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0202"] = SettingParam(
-        steps=250, skip_steps=20, clip_guidance_scale=10000, cutn_batches=4)
+        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0203"] = SettingParam(
-        steps=250, skip_steps=20, clip_guidance_scale=10000, cutn_batches=4)
+        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0301"] = SettingParam(
-        steps=200, skip_steps=20, clip_guidance_scale=13000, cutn_batches=2)
+        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0302"] = SettingParam(
-        steps=200, skip_steps=20, clip_guidance_scale=13000, cutn_batches=2)
+        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0303"] = SettingParam(
-        steps=200, skip_steps=20, clip_guidance_scale=13000, cutn_batches=2)
+        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0401"] = SettingParam(
-        steps=150, skip_steps=10, clip_guidance_scale=10000, cutn_batches=4)
+        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0402"] = SettingParam(
-        steps=150, skip_steps=10, clip_guidance_scale=10000, cutn_batches=4)
+        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0403"] = SettingParam(
-        steps=150, skip_steps=10, clip_guidance_scale=10000, cutn_batches=4)
+        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0404"] = SettingParam(
-        steps=150, skip_steps=10, clip_guidance_scale=10000, cutn_batches=4)
+        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0405"] = SettingParam(
-        steps=150, skip_steps=10, clip_guidance_scale=10000, cutn_batches=4)
+        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0501"] = SettingParam(
-        steps=200, skip_steps=20, clip_guidance_scale=13000, cutn_batches=2)
+        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
 
     def _get_suffix(self):
         return 'Trending on artstation.'
@@ -114,7 +114,7 @@ class PromptEngine:
 
 
 if __name__ == "__main__":
-    test_style = 1
+    test_style = 5
 
     prompt_engine = PromptEngine()
 
