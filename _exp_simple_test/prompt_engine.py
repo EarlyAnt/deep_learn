@@ -36,7 +36,7 @@ class PromptEngine:
                     '0503': Artist(name='Tatsuro Kiuchi', enable=True)}
 
     _sentence_pattern_list = {0: None,
-                              1: SentencePattern(prefix='A beautiful Chinese ink', artist_code_prefix='01', key_word=None, suffix='Trending on artstation.'),
+                              1: SentencePattern(prefix='A beautiful Chinese Shanshui painting', artist_code_prefix='01', key_word=None, suffix='Trending on artstation.'),
                               2: SentencePattern(prefix='A beautiful VR 3D painting by ', artist_code_prefix='02', key_word='Unreal Engine', suffix='Trending on artstation.'),
                               3: SentencePattern(prefix='A picture by ', artist_code_prefix='03', key_word=None, suffix='Trending on artstation.'),
                               4: SentencePattern(prefix='A image by ', artist_code_prefix='04', key_word=None, suffix='Trending on artstation.'),
