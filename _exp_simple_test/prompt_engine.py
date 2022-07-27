@@ -17,31 +17,35 @@ StyleConfig = namedtuple("StyleConfig", "artists, prefix")
 class PromptEngine:
     _artist_list = {'0101': '',
                     '0201': 'Aka mike winkelman',
-                    '0202': 'high-definition',
-                    '0203': 'Unreal Engine',
+                    '0202': 'Raphael Lacoste',
                     '0301': 'Jacek Yerka',
                     '0302': 'Rene Magritte',
                     '0303': 'Igor Morski',
+                    '0304': 'Andre Breton',
                     '0401': 'Simon Stalenhag',
                     '0402': 'Ross Tran',
-                    '0403': 'Liam WongJohn Harris',
+                    '0403': 'Liam Wong',
                     '0404': 'Thomas Kinkade',
                     '0405': 'John Harris',
-                    '0501': 'Pascal Campion'}
-
-    # _style_list = {0: None,
-    #                1: StyleConfig(artists=['0101'], prefix='A beautiful Chinese ink'),
-    #                2: StyleConfig(artists=['0201', '0202', '0203'], prefix='A beautiful VR 3D painting by '),
-    #                3: StyleConfig(artists=['0301', '0302', '0303'], prefix='A picture by '),
-    #                4: StyleConfig(artists=['0401', '0402', '0403', '0404'], prefix='A image by '),
-    #                5: StyleConfig(artists=['0501'], prefix='A modern picture by ')}
+                    '0501': 'Pascal Campion',
+                    '0502': 'Atey Ghailan',
+                    '0503': 'Tatsuro Kiuchi'}
 
     _style_list = {0: None,
                    1: StyleConfig(artists=['0101'], prefix='A beautiful Chinese ink'),
-                   2: StyleConfig(artists=['0201'], prefix='A beautiful VR 3D painting by '),
-                   3: StyleConfig(artists=['0301'], prefix='A picture by '),
-                   4: StyleConfig(artists=['0405'], prefix='A image by '),
-                   5: StyleConfig(artists=['0501'], prefix='A modern picture by ')}
+                   2: StyleConfig(artists=['0201', '0202'], prefix='A beautiful VR 3D painting by '),
+                   3: StyleConfig(artists=['0301', '0302', '0303', '0304'], prefix='A picture by '),
+                   4: StyleConfig(artists=['0401', '0402', '0403', '0404', '0405'], prefix='A image by '),
+                   5: StyleConfig(artists=['0501', '0502', '0503'], prefix='A modern picture by ')}
+
+    _style_key_word = {
+        0: None,
+        1: None,
+        2: 'Unreal Engine',
+        3: None,
+        4: None,
+        5: None
+    }
 
     _rule_list = {}
     _rule_list["0101"] = SettingParam(
@@ -50,13 +54,13 @@ class PromptEngine:
         steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0202"] = SettingParam(
         steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
-    _rule_list["0203"] = SettingParam(
-        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0301"] = SettingParam(
         steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0302"] = SettingParam(
         steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0303"] = SettingParam(
+        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
+    _rule_list["0304"] = SettingParam(
         steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0401"] = SettingParam(
         steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
@@ -70,9 +74,16 @@ class PromptEngine:
         steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
     _rule_list["0501"] = SettingParam(
         steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
+    _rule_list["0502"] = SettingParam(
+        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
+    _rule_list["0503"] = SettingParam(
+        steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
 
-    def _get_suffix(self):
-        return 'Trending on artstation.'
+    def _get_suffix(self, key_word):
+        if key_word is not None:
+            return "{}, Trending on artstation.".format(key_word)
+        else:
+            return 'Trending on artstation.'
 
     def get_rule(self, style):
         print("get_rule->style: {}".format(style))
@@ -94,10 +105,11 @@ class PromptEngine:
     def make_sentense(self, text_prompt, style):
         print("make_sentense->text_prompt: {}".format(text_prompt))
         print("make_sentense->style: {}".format(style))
-        style = self._style_list[style]
+        styleObject = self._style_list[style]
         artist = ''
-        if style is not None and len(style.artists) > 0:
-            artists_list = style.artists
+        key_word = ''
+        if styleObject is not None and len(styleObject.artists) > 0:
+            artists_list = styleObject.artists
             print("make_sentense->artists_list: {}".format(artists_list))
             index = random.randint(0, len(artists_list) - 1)
             print("make_sentense->index: {}".format(index))
@@ -105,8 +117,10 @@ class PromptEngine:
             print("make_sentense->artist_code: {}".format(artist_code))
             artist = self._artist_list[artist_code]
             print("make_sentense->artist: {}".format(artist))
+            key_word = self._style_key_word[style]
+            print("make_sentense->key_word: {}".format(key_word))
             sentence = "{}{}, {}. {}".format(
-                style.prefix, artist, text_prompt, self._get_suffix())
+                styleObject.prefix, artist, text_prompt, self._get_suffix(key_word))
         else:
             sentence = text_prompt
         print("make_sentense->full prompt: {}".format(sentence))
@@ -114,7 +128,7 @@ class PromptEngine:
 
 
 if __name__ == "__main__":
-    test_style = 5
+    test_style = 2
 
     prompt_engine = PromptEngine()
 
