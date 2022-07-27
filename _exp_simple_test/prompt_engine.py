@@ -4,48 +4,43 @@ from collections import namedtuple
 SettingParam = namedtuple(
     "SettingParam", "steps, skip_steps, clip_guidance_scale, cutn_batches, cut_ic_pow, eta, clamp_max")
 
-StyleConfig = namedtuple("StyleConfig", "artists, prefix")
+Artist = namedtuple("Artist", "name, enable")
 
-# 5种风格
-# 01-中国风
-# 02-3D渲染
-# 03-超现实主义
-# 04-cg幻想
-# 05-现代插画
+SentencePattern = namedtuple(
+    "SentencePattern", "prefix, artist_code_prefix, key_word, suffix")
+
+# 6种风格
+# 0-无(其他)
+# 1-中国风
+# 2-3D渲染
+# 3-超现实主义
+# 4-cg幻想
+# 5-现代插画
 
 
 class PromptEngine:
-    _artist_list = {'0101': '',
-                    '0201': 'Aka mike winkelman',
-                    '0202': 'Raphael Lacoste',
-                    '0301': 'Jacek Yerka',
-                    '0302': 'Rene Magritte',
-                    '0303': 'Igor Morski',
-                    '0304': 'Andre Breton',
-                    '0401': 'Simon Stalenhag',
-                    '0402': 'Ross Tran',
-                    '0403': 'Liam Wong',
-                    '0404': 'Thomas Kinkade',
-                    '0405': 'John Harris',
-                    '0501': 'Pascal Campion',
-                    '0502': 'Atey Ghailan',
-                    '0503': 'Tatsuro Kiuchi'}
+    _artist_list = {'0101': None,
+                    '0201': Artist(name='Aka mike winkelman', enable=True),
+                    '0202': Artist(name='Raphael Lacoste', enable=True),
+                    '0301': Artist(name='Jacek Yerka', enable=True),
+                    '0302': Artist(name='Rene Magritte', enable=True),
+                    '0303': Artist(name='Igor Morski', enable=True),
+                    '0304': Artist(name='Andre Breton', enable=True),
+                    '0401': Artist(name='Simon Stalenhag', enable=True),
+                    '0402': Artist(name='Ross Tran', enable=True),
+                    '0403': Artist(name='Liam Wong', enable=True),
+                    '0404': Artist(name='Thomas Kinkade', enable=True),
+                    '0405': Artist(name='John Harris', enable=True),
+                    '0501': Artist(name='Pascal Campion', enable=True),
+                    '0502': Artist(name='Atey Ghailan', enable=True),
+                    '0503': Artist(name='Tatsuro Kiuchi', enable=True)}
 
-    _style_list = {0: None,
-                   1: StyleConfig(artists=['0101'], prefix='A beautiful Chinese ink'),
-                   2: StyleConfig(artists=['0201', '0202'], prefix='A beautiful VR 3D painting by '),
-                   3: StyleConfig(artists=['0301', '0302', '0303', '0304'], prefix='A picture by '),
-                   4: StyleConfig(artists=['0401', '0402', '0403', '0404', '0405'], prefix='A image by '),
-                   5: StyleConfig(artists=['0501', '0502', '0503'], prefix='A modern picture by ')}
-
-    _style_key_word = {
-        0: None,
-        1: None,
-        2: 'Unreal Engine',
-        3: None,
-        4: None,
-        5: None
-    }
+    _sentence_pattern_list = {0: None,
+                              1: SentencePattern(prefix='A beautiful Chinese ink', artist_code_prefix='01', key_word=None, suffix='Trending on artstation.'),
+                              2: SentencePattern(prefix='A beautiful VR 3D painting by ', artist_code_prefix='02', key_word='Unreal Engine', suffix='Trending on artstation.'),
+                              3: SentencePattern(prefix='A picture by ', artist_code_prefix='03', key_word=None, suffix='Trending on artstation.'),
+                              4: SentencePattern(prefix='A image by ', artist_code_prefix='04', key_word=None, suffix='Trending on artstation.'),
+                              5: SentencePattern(prefix='A modern picture by ', artist_code_prefix='05', key_word=None, suffix='Trending on artstation.')}
 
     _rule_list = {}
     _rule_list["0101"] = SettingParam(
@@ -79,50 +74,65 @@ class PromptEngine:
     _rule_list["0503"] = SettingParam(
         steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
 
-    def _get_suffix(self, key_word):
-        if key_word is not None:
-            return "{}, Trending on artstation.".format(key_word)
+    def _get_suffix(self, sentence_pattern):
+        if sentence_pattern.key_word is not None:
+            return "{}, Trending on artstation.".format(sentence_pattern.key_word)
         else:
             return 'Trending on artstation.'
 
+    def _get_artist_list(self, code_prefix):
+        artist_list = []
+        for item in self._artist_list.items():
+            if item[0].startswith(code_prefix) and item[1] != None and item[1].enable == True:
+                artist_list.append(item)
+        return artist_list
+
     def get_rule(self, style):
         print("get_rule->style: {}".format(style))
-        selected_style = self._style_list[style]
-        if selected_style is not None and len(selected_style.artists) > 0:
-            artists_list = selected_style.artists
-            print("get_rule->artists_list: {}".format(artists_list))
-            index = random.randint(0, len(artists_list) - 1)
-            print("get_rule->index: {}".format(index))
-            artist_code = artists_list[index]
-            print("get_rule->artist_code: {}".format(artist_code))
-            rule = self._rule_list[artist_code]
-            print("get_rule->rule: {}".format(rule))
-            return rule
-        else:
-            print("get_rule->none rule")
-            return None
+        sentence_pattern = self._sentence_pattern_list[style]
+        if sentence_pattern is not None:
+            artists_list = self._get_artist_list(
+                code_prefix=sentence_pattern.artist_code_prefix)
+            if artists_list != None and len(artists_list) > 0:
+                print("get_rule->artists_list: {}".format(artists_list))
+                index = random.randint(0, len(artists_list) - 1)
+                print("get_rule->index: {}".format(index))
+                artist = artists_list[index]
+                print("get_rule->artist_code: {}".format(artist[0]))
+                rule = self._rule_list[artist[0]]
+                print("get_rule->rule: {}".format(rule))
+                return rule
+
+        print("get_rule->none rule")
+        return None
 
     def make_sentense(self, text_prompt, style):
         print("make_sentense->text_prompt: {}".format(text_prompt))
         print("make_sentense->style: {}".format(style))
-        styleObject = self._style_list[style]
-        artist = ''
+        sentence = text_prompt
+        sentence_pattern = self._sentence_pattern_list[style]
+        print("make_sentense->sentence_pattern: {}".format(sentence_pattern))
+        artist_name = ''
         key_word = ''
-        if styleObject is not None and len(styleObject.artists) > 0:
-            artists_list = styleObject.artists
-            print("make_sentense->artists_list: {}".format(artists_list))
-            index = random.randint(0, len(artists_list) - 1)
-            print("make_sentense->index: {}".format(index))
-            artist_code = artists_list[index]
-            print("make_sentense->artist_code: {}".format(artist_code))
-            artist = self._artist_list[artist_code]
-            print("make_sentense->artist: {}".format(artist))
-            key_word = self._style_key_word[style]
-            print("make_sentense->key_word: {}".format(key_word))
-            sentence = "{}{}, {}. {}".format(
-                styleObject.prefix, artist, text_prompt, self._get_suffix(key_word))
-        else:
-            sentence = text_prompt
+        if sentence_pattern is not None:
+            artists_list = self._get_artist_list(
+                code_prefix=sentence_pattern.artist_code_prefix)
+            if artists_list != None and len(artists_list) > 0:
+                print("make_sentense->artists_list: {}".format(artists_list))
+                index = random.randint(0, len(artists_list) - 1)
+                print("make_sentense->index: {}".format(index))
+                artist = artists_list[index]
+                print("make_sentense->artist_code: {}".format(artist[0]))
+                artist_name = artist[1].name
+                print("make_sentense->artist_name: {}".format(artist_name))
+                key_word = sentence_pattern.key_word
+                print("make_sentense->key_word: {}".format(key_word))
+                sentence = "{}{}, {}. {}".format(
+                    sentence_pattern.prefix, artist_name, text_prompt, self._get_suffix(sentence_pattern))
+            else:
+                sentence = "{}, {}. {}".format(
+                    sentence_pattern.prefix, text_prompt, self._get_suffix(sentence_pattern))
+
         print("make_sentense->full prompt: {}".format(sentence))
         return sentence
 
