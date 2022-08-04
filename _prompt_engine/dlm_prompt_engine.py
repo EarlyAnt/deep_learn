@@ -1,8 +1,16 @@
-from base_prompt_engine import BasePromptEngine, Artist, SentencePattern, SettingParam
+from collections import namedtuple
+from base_prompt_engine import BasePromptEngine
+
+SettingParam = namedtuple(
+    "SettingParam", "steps, skip_steps, clip_guidance_scale, cutn_batches, cut_ic_pow, eta, clamp_max")
+
+Artist = namedtuple("Artist", "name, enable")
+
+SentencePattern = namedtuple(
+    "SentencePattern", "prefix, artist_code_prefix, key_word, suffix")
 
 
 class DLMPromptEngine(BasePromptEngine):
-    pass
     _artist_list = {'0101': None,
                     '0102': Artist(name='Tatsuro Kiuchi', enable=True),
                     '0201': Artist(name='Aka mike winkelman', enable=True),
