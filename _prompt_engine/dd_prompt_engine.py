@@ -2,6 +2,7 @@ import random
 from collections import namedtuple
 from base_prompt_engine import BasePromptEngine
 
+
 SettingParam = namedtuple(
     "SettingParam", "steps, skip_steps, clip_guidance_scale, cutn_batches, cut_ic_pow, eta, clamp_max")
 
