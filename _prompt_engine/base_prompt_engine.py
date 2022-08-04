@@ -10,6 +10,7 @@ import random
 
 
 class BasePromptEngine:
+    @classmethod
     def get_generation_config(self, text_prompt, style):
         print("need to overwrite !!!")
         print("BasePromptEngine.get_generation_config->text prompt: {}, style: {}".format(text_prompt, style))
@@ -19,5 +20,4 @@ class BasePromptEngine:
 if __name__ == "__main__":
     test_style = 5
 
-    prompt_engine = BasePromptEngine()
-    prompt_engine.get_generation_config(text_prompt="抽象方法不执行任何逻辑", style=0)
+    BasePromptEngine.get_generation_config(text_prompt="抽象方法不执行任何逻辑", style=0)

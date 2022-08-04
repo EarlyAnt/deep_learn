@@ -51,7 +51,7 @@ class DLMPromptEngine(BasePromptEngine):
     _rule_list["0502"] = SettingParam(
         steps=150, skip_steps=20, clip_guidance_scale=10000, cutn_batches=2, cut_ic_pow=10, eta=0.1, clamp_max=0.09)
 
-
+    @classmethod
     def get_generation_config(self, text_prompt, style):
         print("need to implement !!!")
         print("DLMPromptEngine.get_generation_config->text prompt: {}, style: {}".format(text_prompt, style))
@@ -61,6 +61,5 @@ class DLMPromptEngine(BasePromptEngine):
 if __name__ == "__main__":
     test_style = 2
 
-    prompt_engine = DLMPromptEngine()
-    prompt_engine = prompt_engine.get_generation_config(
+    DLMPromptEngine.get_generation_config(
         text_prompt="a group of small animals are feeding, playing and resting on the grass", style=test_style)

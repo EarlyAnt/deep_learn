@@ -116,6 +116,7 @@ class DDPromptEngine(BasePromptEngine):
                 artist_list.append(item)
         return artist_list
 
+    @classmethod
     def get_generation_config(self, text_prompt, style):
         print("get_generate_config->text_prompt: {}".format(text_prompt))
         print("get_generate_config->style: {}".format(style))
@@ -127,11 +128,11 @@ class DDPromptEngine(BasePromptEngine):
         sentence_pattern = self._sentence_pattern_list[style]
         print("get_generate_config->sentence_pattern: {}".format(sentence_pattern))
 
-        fullSettingParam = self._get_full_setting_param()
+        fullSettingParam = self._get_full_setting_param(self)
 
         if sentence_pattern is not None:
-            artists_list = self._get_artist_list(
-                code_prefix=sentence_pattern.artist_code_prefix)
+            artists_list = self._get_artist_list(self,
+                                                 code_prefix=sentence_pattern.artist_code_prefix)
             if artists_list != None and len(artists_list) > 0:
                 print("get_generate_config->artists_list: {}".format(artists_list))
                 index = random.randint(0, len(artists_list) - 1)
@@ -143,20 +144,21 @@ class DDPromptEngine(BasePromptEngine):
                 key_word = sentence_pattern.key_word
                 print("get_generate_config->key_word: {}".format(key_word))
                 sentence = "{}{}, {}. {}".format(
-                    sentence_pattern.prefix, artist_name, text_prompt, self._get_suffix(sentence_pattern))
+                    sentence_pattern.prefix, artist_name, text_prompt, self._get_suffix(self, sentence_pattern))
                 rule = self._rule_list[artist[0]]
 
                 fullSettingParam.text_prompts["0"] = [sentence]
-                fullSettingParam._replace(steps = rule.steps)
-                fullSettingParam._replace(skip_steps = rule.skip_steps)
-                fullSettingParam._replace(clip_guidance_scale = rule.clip_guidance_scale)
-                fullSettingParam._replace(cutn_batches = rule.cutn_batches)
-                fullSettingParam._replace(cut_ic_pow = rule.cut_ic_pow)
-                fullSettingParam._replace(eta = rule.eta)
-                fullSettingParam._replace(clamp_max = rule.clamp_max)
+                fullSettingParam._replace(steps=rule.steps)
+                fullSettingParam._replace(skip_steps=rule.skip_steps)
+                fullSettingParam._replace(
+                    clip_guidance_scale=rule.clip_guidance_scale)
+                fullSettingParam._replace(cutn_batches=rule.cutn_batches)
+                fullSettingParam._replace(cut_ic_pow=rule.cut_ic_pow)
+                fullSettingParam._replace(eta=rule.eta)
+                fullSettingParam._replace(clamp_max=rule.clamp_max)
             else:
                 sentence = "{}, {}. {}".format(
-                    sentence_pattern.prefix, text_prompt, self._get_suffix(sentence_pattern))
+                    sentence_pattern.prefix, text_prompt, self._get_suffix(self, sentence_pattern))
 
         print("get_generate_config->full prompt: {}".format(sentence))
         print("get_generate_config->rule: {}".format(rule))
@@ -168,9 +170,7 @@ class DDPromptEngine(BasePromptEngine):
 if __name__ == "__main__":
     test_style = 5
 
-    prompt_engine = DDPromptEngine()
-
-    fullSettingParam = prompt_engine.get_generation_config(
+    fullSettingParam = DDPromptEngine.get_generation_config(
         text_prompt="a group of small animals are feeding, playing and resting on the grass", style=test_style)
     print("main->sentence: {}".format(fullSettingParam.text_prompts))
     print("main->steps: {}".format(fullSettingParam.steps))
