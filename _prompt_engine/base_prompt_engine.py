@@ -13,7 +13,7 @@ class BasePromptEngine:
     def get_generation_config(self, text_prompt, style):
         print("need to overwrite !!!")
         print("BasePromptEngine.get_generation_config->text prompt: {}, style: {}".format(text_prompt, style))
-        return None, None
+        return None
 
 
 if __name__ == "__main__":
