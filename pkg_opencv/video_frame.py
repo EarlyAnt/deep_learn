@@ -1,7 +1,6 @@
 import cv2
 
 # 初始化对象
-# cap = cv2.VideoCapture('.\\demo.mp4')
 cap = cv2.VideoCapture(0)
 
 # 检查视频是否打开
