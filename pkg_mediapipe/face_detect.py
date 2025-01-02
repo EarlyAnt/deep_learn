@@ -30,7 +30,7 @@ def detect_face_file():
                         str(idx) + '.png', annotated_image)
 # 检测摄像头
 def detect_face_camera():
-    from datetime import datetime
+    from utils import datetime_util as dt
 
     mp_face_detection = mp.solutions.face_detection
     mp_drawing = mp.solutions.drawing_utils
@@ -57,7 +57,7 @@ def detect_face_camera():
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             if results.detections:
                 print(
-                    f"face count: {len(results.detections)}, time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S:%f')}")
+                    f"face count: {len(results.detections)}, time: {dt.date_time_full()}")
 
                 for detection in results.detections:
                     mp_drawing.draw_detection(image, detection)
@@ -69,4 +69,10 @@ def detect_face_camera():
 
 
 if __name__ == "__main__":
+    import os
+    import sys
+
+    sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    print(f"sys path: {sys.path}\n")
+    
     detect_face_camera()

@@ -1,3 +1,10 @@
+import os
+import sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+print(f"sys path: {sys.path}\n")
+
+
 from utils.datetime_util import sys_time
 
 # 定义两个矩阵
