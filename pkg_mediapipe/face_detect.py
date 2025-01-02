@@ -1,8 +1,8 @@
 import cv2
 import mediapipe as mp
 
-
-def detect_face():
+# 检测文件
+def detect_face_file():
     mp_face_detection = mp.solutions.face_detection
     mp_drawing = mp.solutions.drawing_utils
 
@@ -19,6 +19,7 @@ def detect_face():
             # Draw face detections of each face.
             if not results.detections:
                 continue
+
             annotated_image = image.copy()
             for detection in results.detections:
                 print('Nose tip:')
@@ -27,6 +28,12 @@ def detect_face():
                 mp_drawing.draw_detection(annotated_image, detection)
             cv2.imwrite('/tmp/annotated_image' +
                         str(idx) + '.png', annotated_image)
+# 检测摄像头
+def detect_face_camera():
+    from datetime import datetime
+
+    mp_face_detection = mp.solutions.face_detection
+    mp_drawing = mp.solutions.drawing_utils
 
     # For webcam input:
     cap = cv2.VideoCapture(0)
@@ -49,6 +56,9 @@ def detect_face():
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
             if results.detections:
+                print(
+                    f"face count: {len(results.detections)}, time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S:%f')}")
+
                 for detection in results.detections:
                     mp_drawing.draw_detection(image, detection)
             # Flip the image horizontally for a selfie-view display.
@@ -59,4 +69,4 @@ def detect_face():
 
 
 if __name__ == "__main__":
-    detect_face()
+    detect_face_camera()
